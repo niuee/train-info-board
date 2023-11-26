@@ -1,5 +1,7 @@
 # info-board
 
+This is an ongoing proof of concept project.
+
 To install dependencies:
 
 ```bash
