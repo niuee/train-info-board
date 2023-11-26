@@ -6,14 +6,16 @@
 import {load} from "opentype.js";
 import { BSON, Timestamp } from "bson";
 
-let notoSans = "fonts/NotoSansCJKtc-Medium.otf";
+let notoSans = "fonts/NotoSansCJKtc-Bold.otf";
 let notoSerif = "fonts/NotoSerifCJKtc-Regular.otf";
 let cwt = "fonts/cwTexMing.ttf";
-let sourceHan = "fonts/SourceHanSansTW-Medium.otf";
+let sourceHan = "fonts/SourceHanSansTW-Bold.otf";
 let sourceHanHeavy = "fonts/SourceHanSansTW-Heavy.otf";
 let sourceHanSerif = "fonts/SourceHanSerifTC-Regular.otf";
 let testFont = "fonts/Cubic_11_1.013_R.ttf";
 let uniFont = "fonts/unifont-15.1.04.otf";
+let twFont = "fonts/TW-Sung-98_1.ttf";
+
 
 type Color = {
     r: number,
@@ -33,7 +35,7 @@ type Point = {
     y: number;
 }
 
-load(notoSans, async function(err, font) {
+load(sourceHan, async function(err, font) {
     if (err) {
         alert('Font could not be loaded: ' + err);
     } else {
@@ -53,7 +55,7 @@ load(notoSans, async function(err, font) {
         const numberOfCharInLimitingAxis = 1;
         const spaceToLightDiameterRatio = 0;
         const limitingDimension = Math.min(canvas.width, canvas.height);
-        const inputString = "本次列車沿途停靠： 新營、臺南";
+        const inputString = "本次列車沿途停靠： 新營、臺南、新左營、高雄、鳳山";
         const inputStringLights = [];
         for(let index = 0; index < inputString.length; index++){
             inputStringLights.push(convertCharToBitmapWithVariableWidth(font, inputString[index], lightDimensionPerChar));
@@ -66,7 +68,7 @@ load(notoSans, async function(err, font) {
         const numberOfSpaceInLimitingAxis = numberOfLightsInLimitingAxis - 1;
         // numberOfLightsInLimitingAxis * radius * 2 + numberofSpaceInLimitingAxis * radius * 2 * spaceToLightDiameterRatio = fullPixelLengthInLimitingAxis
         // 2R * (numberOfLightsInLimitingAxis + numberOfSpaceInLimitingAxis * spaceToLightDiameterRatio) = fullPixelLengthInLimitingAxis
-        const lightRadius = limitingDimension / (2 * numberOfLightsInLimitingAxis + numberOfSpaceInLimitingAxis * spaceToLightDiameterRatio);
+        const lightRadius = limitingDimension / (2 * (numberOfLightsInLimitingAxis + numberOfSpaceInLimitingAxis * spaceToLightDiameterRatio));
         const spaceLength = lightRadius * 2 * spaceToLightDiameterRatio;
         console.log("Light Radius is calculated to be:", lightRadius);
         console.log("Space Length is calculated to be:", spaceLength);
@@ -78,13 +80,14 @@ load(notoSans, async function(err, font) {
         const xLightIndexAtTheEnd = Math.ceil((canvas.width - lightRadius) / unitLength);
         const topLeftLightCenter = {x: lightRadius, y: lightRadius};
         const inputStringWidthInPixel = (charCount * lightDimensionPerChar) * lightRadius * 2+ (charCount * lightDimensionPerChar - 1) * spaceLength;
-        const inputStringHeightInPixel = 1 * lightDimensionPerChar * lightRadius * 2 + (lightDimensionPerChar - 1) * spaceLength;
+        const inputStringHeightInPixel = lightDimensionPerChar * unitLength - spaceLength;
         let xCoord = topLeftLightCenter.x;
         while (xCoord < canvas.width){
             let yCoord = topLeftLightCenter.y;
             while(yCoord < canvas.height){
                 context.beginPath();
                 context.arc(xCoord, yCoord, lightRadius, 0, Math.PI * 2);
+                context.fillStyle = `rgba(255, 0, 0, 180)`;
                 context.fill();
                 yCoord += (lightRadius * 2 + spaceLength);
             }
